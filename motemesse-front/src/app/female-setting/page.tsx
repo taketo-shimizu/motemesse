@@ -10,6 +10,7 @@ import ImageUploadForProfile from '@/components/ImageUploadForProfile';
 import { ProfileData } from '@/types/profile';
 import { useRouter } from 'next/navigation';
 import { useShallow } from 'zustand/react/shallow';
+import { useChatStore } from '@/store/chat';
 
 export default function FemaleSetting() {
     const { targets, selectedTargetId, selectTarget, isLoading: isLoadingTargets, newTargetInfo, clearNewTargetInfo, addTargetToList, updateTargetInList } = useTargetsStore(
@@ -45,6 +46,9 @@ export default function FemaleSetting() {
             setIsFemaleAnalyzing: s.setIsFemaleAnalyzing,
         }))
     );
+
+    const setConversations = useChatStore(s => s.setConversations);
+    const setEssentialChatUpdate = useChatStore(s => s.setEssentialChatUpdate);
 
     const syncUser = useUserStore(s => s.syncUser);
     const isLoadingUser = useUserStore(s => s.isLoading);
@@ -186,6 +190,10 @@ export default function FemaleSetting() {
                 addTargetToList(newTarget);
                 selectTarget(newTarget.id);
                 await syncUser(); // ユーザー情報も同期（recent_target_idを更新）
+
+                setConversations([]);
+                setEssentialChatUpdate(true);
+
                 alert('保存しました');
 
                 // URLからクエリパラメータを削除

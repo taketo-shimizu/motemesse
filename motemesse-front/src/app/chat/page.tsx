@@ -109,9 +109,12 @@ export default function Chat() {
     }
   }, [selectedTargetId, setConversations, setIsLoadingConversations, setEssentialChatUpdate]);
 
+  console.log('conversations', conversations);
+
   // ターゲットが変更されたら会話履歴を取得
   useEffect(() => {
     if (selectedTargetId && essentialChatUpdate) {
+      console.log('ターゲットが変更されたら会話履歴を取得');
       fetchConversations();
       resetChatState();
     }

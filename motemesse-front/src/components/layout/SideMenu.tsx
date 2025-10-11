@@ -37,6 +37,8 @@ export default function SideMenu() {
     }))
   );
 
+  const setConversations = useChatStore(s => s.setConversations);
+
   const setEssentialChatUpdate = useChatStore(s => s.setEssentialChatUpdate);
 
   const handleLogout = () => {
@@ -106,6 +108,7 @@ export default function SideMenu() {
 
       // ローカルの配列から削除
       removeTargetFromList(selectedTargetId);
+      setConversations([]);
 
       alert(`${selectedTarget.name}さんを削除しました`);
     } catch (error) {
