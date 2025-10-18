@@ -18,7 +18,7 @@ model User {
   email       String   @unique
   name        String?
   auth0Id     String?  @unique @map("auth0_id") // Auth0のユーザーIDを保存
-  anonymousId  String?   @unique 
+  anonymousId String? @unique @map("anonymous_id") 
   picture     String?  // プロフィール画像URL
   emailVerified Boolean @default(false) @map("email_verified")
   age         Int?     // 年齢
