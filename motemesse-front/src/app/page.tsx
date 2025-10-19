@@ -12,6 +12,8 @@ export default async function Home() {
     
     if (user && !user.anonymousId) {
       const anonId = randomUUID();
+      console.log('user', user);
+      console.log('anonId', anonId);
       
       // DBに保存
       await prisma.user.update({
