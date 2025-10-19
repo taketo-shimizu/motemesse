@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { UserProvider } from '@auth0/nextjs-auth0/client';
 import "./globals.css";
 import BaseDataProvider from "@/components/BaseDataProvider";
 
@@ -29,11 +28,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <UserProvider>
-          <BaseDataProvider>
-            {children}
-          </BaseDataProvider>
-        </UserProvider>
+        <BaseDataProvider>
+          {children}
+        </BaseDataProvider>
       </body>
     </html>
   );

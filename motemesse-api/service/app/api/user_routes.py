@@ -16,9 +16,8 @@ class UpdateToneRequest(BaseModel):
 
 class UserResponse(BaseModel):
     id: int
-    auth0_id: Optional[str]
+    anonymous_id: Optional[str]
     name: Optional[str]
-    email: str
     age: Optional[int]
     job: Optional[str]
     hobby: Optional[str]

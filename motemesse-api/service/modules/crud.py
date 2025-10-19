@@ -7,9 +7,9 @@ def get_user_by_id(db: Session, user_id: int):
     return db.query(models.User).filter(models.User.id == user_id).first()
 
 
-def get_user_by_auth0_id(db: Session, auth0_id: str):
-    """Auth0 IDからユーザー情報を取得"""
-    return db.query(models.User).filter(models.User.auth0_id == auth0_id).first()
+def get_user_by_anonymous_id(db: Session, anonymous_id: str):
+    """Anonymous IDからユーザー情報を取得"""
+    return db.query(models.User).filter(models.User.anonymous_id == anonymous_id).first()
 
 
 def get_target_by_id(db: Session, target_id: int):
@@ -30,9 +30,9 @@ def get_conversation(db: Session, user_id: int, target_id: int):
 
 
 
-def create_user(db: Session, auth0_id: str, name: str, email: str, **kwargs):
+def create_user(db: Session, anonymous_id: str, **kwargs):
     """新規ユーザーを作成"""
-    db_user = models.User(auth0_id=auth0_id, name=name, email=email, **kwargs)
+    db_user = models.User(anonymous_id=anonymous_id, **kwargs)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)

@@ -1,19 +1,13 @@
 import { NextResponse } from 'next/server';
-import { getSession } from '@auth0/nextjs-auth0';
+import { getCurrentUser } from '@/lib/cookie-auth';
 import { prisma } from '@/lib/prisma';
 
 export async function POST(request: Request) {
   try {
-    let session;
-    try {
-      session = await getSession();
-    } catch (sessionError) {
-      console.error('Session error:', sessionError);
-      return NextResponse.json({ error: 'Authentication failed' }, { status: 401 });
-    }
+    const user = await getCurrentUser();
 
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     const body = await request.json();
@@ -27,15 +21,6 @@ export async function POST(request: Request) {
     const toneValue = parseInt(tone, 10);
     if (isNaN(toneValue) || toneValue < 0 || toneValue > 3) {
       return NextResponse.json({ error: 'Tone must be a number between 0 and 3' }, { status: 400 });
-    }
-
-    // Get user from database
-    const user = await prisma.user.findUnique({
-      where: { auth0Id: session.user.sub }
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     // Update user tone

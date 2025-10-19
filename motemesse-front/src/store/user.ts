@@ -2,10 +2,7 @@ import { create } from 'zustand';
 
 interface User {
   id: number;
-  auth0Id: string;
-  email: string;
   name: string | null;
-  picture: string | null;
   age?: number | null;
   job?: string | null;
   hobby?: string | null;
@@ -67,12 +64,12 @@ export const useUserStore = create<UserState>((set) => ({
   syncUser: async () => {
     set({ isLoading: true, error: null });
     try {
-      const response = await fetch('/api/users/sync', {
-        method: 'POST',
+      const response = await fetch('/api/users/me', {
+        method: 'GET',
       });
 
       if (!response.ok) {
-        throw new Error('Failed to sync user');
+        throw new Error('Failed to get user');
       }
 
       const data = await response.json();

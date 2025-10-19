@@ -3,11 +3,9 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { useTargetsStore } from '@/store/targets';
 import { useUserStore } from '@/store/user';
-import { useUser } from '@auth0/nextjs-auth0/client';
 import { useRouter, usePathname } from 'next/navigation';
 
 export default function BaseDataProvider({ children }: { children: React.ReactNode }) {
-  const { user, isLoading: userLoading } = useUser();
   const setSelectedTargetFromRecentTarget = useTargetsStore((state) => state.setSelectedTargetFromRecentTarget);
   const syncUser = useUserStore((state) => state.syncUser);
   const fetchTargets = useTargetsStore((state) => state.fetchTargets);
@@ -20,7 +18,6 @@ export default function BaseDataProvider({ children }: { children: React.ReactNo
   // 初期化処理を安定化
   const initializeApp = useCallback(async () => {
     if (isInitialized.current) return;
-    if (userLoading || !user) return;
 
     isInitialized.current = true;
 
@@ -47,7 +44,7 @@ export default function BaseDataProvider({ children }: { children: React.ReactNo
       console.error('Error initializing app data:', error);
       isInitialized.current = false;
     }
-  }, [user, userLoading, syncUser, pathname, router, setSelectedTargetFromRecentTarget]);
+  }, [syncUser, fetchTargets, pathname, router, setSelectedTargetFromRecentTarget]);
 
   useEffect(() => {
     initializeApp();

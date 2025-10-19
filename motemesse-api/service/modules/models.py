@@ -10,9 +10,8 @@ class User(Base):
     __tablename__ = "users"
     
     id = Column(Integer, primary_key=True, index=True)
-    auth0_id = Column(String, unique=True, index=True)
-    name = Column(String)
-    email = Column(String, unique=True, index=True)
+    anonymous_id = Column(String, unique=True, index=True, nullable=True)
+    name = Column(String, nullable=True)
     age = Column(Integer, nullable=True)
     job = Column(String, nullable=True)
     hobby = Column(String, nullable=True)

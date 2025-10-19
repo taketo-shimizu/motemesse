@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSession } from '@auth0/nextjs-auth0';
+import { getCurrentUser } from '@/lib/cookie-auth';
 import { prisma } from '@/lib/prisma';
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getSession();
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const user = await getCurrentUser();
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     const { recentTargetId } = await request.json();
@@ -17,7 +18,7 @@ export async function POST(request: NextRequest) {
     // ユーザーのrecent_target_idを更新
     const updatedUser = await prisma.user.update({
       where: {
-        auth0Id: session.user.sub,
+        id: user.id,
       },
       data: {
         recentTargetId: targetId,

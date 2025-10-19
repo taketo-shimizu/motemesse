@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSession } from '@auth0/nextjs-auth0';
+import { getCurrentUser } from '@/lib/cookie-auth';
 import { prisma } from '@/lib/prisma';
 
 // 会話履歴を取得
 export async function GET(request: NextRequest) {
   try {
-    const session = await getSession();
-    if (!session || !session.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const user = await getCurrentUser();
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     const searchParams = request.nextUrl.searchParams;
@@ -15,15 +16,6 @@ export async function GET(request: NextRequest) {
 
     if (!targetId) {
       return NextResponse.json({ error: 'targetId is required' }, { status: 400 });
-    }
-
-    // Auth0 IDからユーザーを取得
-    const user = await prisma.user.findUnique({
-      where: { auth0Id: session.user.sub }
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     // 会話履歴を取得
@@ -54,9 +46,10 @@ export async function GET(request: NextRequest) {
 // 新しい会話を保存
 export async function POST(request: NextRequest) {
   try {
-    const session = await getSession();
-    if (!session || !session.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const user = await getCurrentUser();
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     const body = await request.json();
@@ -66,15 +59,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         error: 'targetId and maleReply are required'
       }, { status: 400 });
-    }
-
-    // Auth0 IDからユーザーを取得
-    const user = await prisma.user.findUnique({
-      where: { auth0Id: session.user.sub }
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     // ターゲットが存在し、ユーザーのものであることを確認

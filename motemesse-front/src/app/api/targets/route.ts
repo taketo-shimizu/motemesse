@@ -1,25 +1,10 @@
 import { NextResponse } from 'next/server';
-import { getSession } from '@auth0/nextjs-auth0';
+import { getCurrentUser } from '@/lib/cookie-auth';
 import { prisma } from '@/lib/prisma';
 
 export async function GET() {
   try {
-    let session;
-    try {
-      session = await getSession();
-    } catch (sessionError) {
-      console.error('Session error:', sessionError);
-      return NextResponse.json({ error: 'Authentication failed' }, { status: 401 });
-    }
-
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
-    }
-
-    // Get user from database
-    const user = await prisma.user.findUnique({
-      where: { auth0Id: session.user.sub }
-    });
+    const user = await getCurrentUser();
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
@@ -40,17 +25,6 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    let session;
-    try {
-      session = await getSession();
-    } catch (sessionError) {
-      console.error('Session error:', sessionError);
-      return NextResponse.json({ error: 'Authentication failed' }, { status: 401 });
-    }
-
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
-    }
 
     const body = await request.json();
     const {
@@ -77,10 +51,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Name is required' }, { status: 400 });
     }
 
-    // Get user from database
-    const user = await prisma.user.findUnique({
-      where: { auth0Id: session.user.sub }
-    });
+    const user = await getCurrentUser();
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
@@ -125,17 +96,6 @@ export async function POST(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
-    let session;
-    try {
-      session = await getSession();
-    } catch (sessionError) {
-      console.error('Session error:', sessionError);
-      return NextResponse.json({ error: 'Authentication failed' }, { status: 401 });
-    }
-
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
-    }
 
     const { searchParams } = new URL(request.url);
     const targetIdParam = searchParams.get('id');
@@ -151,10 +111,7 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: 'Invalid Target ID' }, { status: 400 });
     }
 
-    // Get user from database
-    const user = await prisma.user.findUnique({
-      where: { auth0Id: session.user.sub }
-    });
+    const user = await getCurrentUser();
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
@@ -186,17 +143,6 @@ export async function DELETE(request: Request) {
 
 export async function PUT(request: Request) {
   try {
-    let session;
-    try {
-      session = await getSession();
-    } catch (sessionError) {
-      console.error('Session error:', sessionError);
-      return NextResponse.json({ error: 'Authentication failed' }, { status: 401 });
-    }
-
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
-    }
 
     const body = await request.json();
     const {
@@ -216,10 +162,7 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: 'Invalid Target ID' }, { status: 400 });
     }
 
-    // Get user from database
-    const user = await prisma.user.findUnique({
-      where: { auth0Id: session.user.sub }
-    });
+    const user = await getCurrentUser();
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
