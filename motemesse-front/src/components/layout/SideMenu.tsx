@@ -291,17 +291,6 @@ export default function SideMenu() {
             </Link>
           </div>
         </div>
-
-        {/* ログアウトボタン - 下部固定 */}
-        <div className="p-4 border-t border-gray-100">
-          <button
-            onClick={handleLogout}
-            className="text-sm w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-3.5 px-4 rounded-2xl transition-all flex items-center justify-center font-medium"
-          >
-            <FiLogOut className="w-5 h-5 mr-2" />
-            ログアウト
-          </button>
-        </div>
       </div>
     </>
   );
