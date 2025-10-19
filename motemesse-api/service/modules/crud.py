@@ -6,12 +6,6 @@ def get_user_by_id(db: Session, user_id: int):
     """ユーザーIDからユーザー情報を取得"""
     return db.query(models.User).filter(models.User.id == user_id).first()
 
-
-def get_user_by_anonymous_id(db: Session, anonymous_id: str):
-    """Anonymous IDからユーザー情報を取得"""
-    return db.query(models.User).filter(models.User.anonymous_id == anonymous_id).first()
-
-
 def get_target_by_id(db: Session, target_id: int):
     """ターゲットIDから相手の女性情報を取得"""
     return db.query(models.Target).filter(models.Target.id == target_id).first()
