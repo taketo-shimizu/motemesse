@@ -360,8 +360,8 @@ export default function Chat() {
         reader.readAsDataURL(file);
       });
 
-      // APIを呼び出し
-      const response = await fetch('/api/analyze-chat-image', {
+      // APIを呼び出し（リトライ機能付き）
+      const response = await fetchWithRetry('/api/analyze-chat-image', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
