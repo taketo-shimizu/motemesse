@@ -33,6 +33,7 @@ interface ChatState {
   showIntentOptions: boolean;
   isUploadingScreenshot: boolean;
   essentialChatUpdate: boolean;
+  currentSlideIndex: number;
 
   setMessage: (message: string) => void;
   setReplyCandidates: (candidates: ReplyCandidate[]) => void;
@@ -46,6 +47,7 @@ interface ChatState {
   setShowIntentOptions: (show: boolean) => void;
   setIsUploadingScreenshot: (isUploading: boolean) => void;
   setEssentialChatUpdate: (essentialChatUpdate: boolean) => void;
+  setCurrentSlideIndex: (index: number) => void;
 
   updateReplyCandidate: (id: number, updates: Partial<ReplyCandidate>) => void;
   resetChatState: () => void;
@@ -65,6 +67,7 @@ export const useChatStore = create<ChatState>((set) => ({
   showIntentOptions: false,
   isUploadingScreenshot: false,
   essentialChatUpdate: true,
+  currentSlideIndex: 0,
 
   setMessage: (message) => set({ message }),
   setReplyCandidates: (candidates) => set({ replyCandidates: candidates }),
@@ -101,4 +104,6 @@ export const useChatStore = create<ChatState>((set) => ({
       conversations: [...state.conversations, conversation]
     }));
   },
+
+  setCurrentSlideIndex: (index) => set({ currentSlideIndex: index }),
 }));

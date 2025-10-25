@@ -6,6 +6,7 @@ import { useEffect, useLayoutEffect, useCallback, useState, useRef } from 'react
 import { useUserStore } from '@/store/user';
 import { useChatStore } from '@/store/chat';
 import { useShallow } from 'zustand/react/shallow';
+import useEmblaCarousel from 'embla-carousel-react';
 
 
 export default function Chat() {
@@ -39,6 +40,7 @@ export default function Chat() {
     showIntentOptions,
     isUploadingScreenshot,
     essentialChatUpdate,
+    currentSlideIndex,
     setMessage,
     setReplyCandidates,
     setConversations,
@@ -53,6 +55,7 @@ export default function Chat() {
     updateReplyCandidate,
     resetChatState,
     addConversation,
+    setCurrentSlideIndex,
   } = useChatStore(
     useShallow((s) => ({
       message: s.message,
@@ -67,6 +70,7 @@ export default function Chat() {
       showIntentOptions: s.showIntentOptions,
       isUploadingScreenshot: s.isUploadingScreenshot,
       essentialChatUpdate: s.essentialChatUpdate,
+      currentSlideIndex: s.currentSlideIndex,
       setMessage: s.setMessage,
       setReplyCandidates: s.setReplyCandidates,
       setConversations: s.setConversations,
@@ -81,11 +85,42 @@ export default function Chat() {
       updateReplyCandidate: s.updateReplyCandidate,
       resetChatState: s.resetChatState,
       addConversation: s.addConversation,
+      setCurrentSlideIndex: s.setCurrentSlideIndex,
     }))
   );
 
   // スクリーンショットアップロード関連のstate
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // 返信候補スライダー関連（Embla Carousel）
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    align: 'start',
+    containScroll: 'trimSnaps'
+  });
+
+  // Embla Carouselのイベントハンドラー
+  useEffect(() => {
+    if (!emblaApi) return;
+
+    const onSelect = () => {
+      setCurrentSlideIndex(emblaApi.selectedScrollSnap());
+    };
+
+    emblaApi.on('select', onSelect);
+    onSelect();
+
+    return () => {
+      emblaApi.off('select', onSelect);
+    };
+  }, [emblaApi]);
+
+  // 返信候補が表示されたらスライドインデックスをリセット
+  useEffect(() => {
+    if (showCandidates && emblaApi) {
+      emblaApi.scrollTo(0);
+      setCurrentSlideIndex(0);
+    }
+  }, [showCandidates, emblaApi]);
 
   // 選択されたターゲットの情報を取得
   const selectedTarget = targets.find(t => t.id === selectedTargetId);
@@ -109,12 +144,10 @@ export default function Chat() {
     }
   }, [selectedTargetId, setConversations, setIsLoadingConversations, setEssentialChatUpdate]);
 
-  console.log('conversations', conversations);
 
   // ターゲットが変更されたら会話履歴を取得
   useEffect(() => {
     if (selectedTargetId && essentialChatUpdate) {
-      console.log('ターゲットが変更されたら会話履歴を取得');
       fetchConversations();
       resetChatState();
     }
@@ -343,6 +376,13 @@ export default function Chat() {
     }
   };
 
+  // ドットクリック処理
+  const handleDotClick = (index: number) => {
+    if (emblaApi) {
+      emblaApi.scrollTo(index);
+    }
+  };
+
   // スクリーンショットアップロード処理（単一画像のみ）
   const handleScreenshotUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -424,7 +464,7 @@ export default function Chat() {
 
   return (
     <DefaultLayout>
-      <div className="grid grid-rows-[auto_1fr_auto] h-[calc(100dvh-60px)] bg-[#f5f5f5] text-sm">
+      <div className="grid grid-rows-[auto_1fr_auto_auto] h-[calc(100dvh-60px)] bg-[#f5f5f5] text-sm">
         {(isLoading || isLoadingConversations || isGeneratingInitial || initialization || isUploadingScreenshot) && (
           <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
             <div className="animate-spin rounded-full h-10 w-10 border-4 border-gray-200 border-t-tapple-pink"></div>
@@ -503,8 +543,8 @@ export default function Chat() {
         </div>
 
         {/* メッセージ入力エリア */}
-        <div className="bg-white p-4 h-[80px]">
-          <div className="flex items-center gap-2">
+        <div className="bg-white p-2 h-[60px]">
+          <div className="flex items-center gap-2 h-full">
             {/* スクリーンショットアップロードボタン */}
             <input
               ref={fileInputRef}
@@ -560,10 +600,18 @@ export default function Chat() {
           </div>
         </div>
 
+        {/* バナー広告エリア */}
+        <div className="bg-white border-t border-gray-200 p-2 flex justify-center items-center overflow-hidden">
+          {/* a8.netの広告コードをここに配置 */}
+          <div className="w-[350px] h-[80px] bg-gray-100 flex items-center justify-center text-gray-400 text-xs">
+            広告エリア (350×80)
+          </div>
+        </div>
+
         {/* 返信候補オーバーレイ */}
         {showCandidates && replyCandidates.length > 0 && (
-          <div className="grid grid-rows-[auto_1fr] absolute bottom-[80px] left-0 right-0 bg-white shadow-2xl max-h-[450px] overflow-y-auto z-10 rounded-t-3xl p-4">
-            <div className="bg-white rounded-t-3xl flex items-center justify-between">
+          <div className="grid grid-rows-[auto_1fr_auto] absolute bottom-[60px] left-0 right-0 bg-white shadow-2xl z-10 rounded-t-3xl p-4 max-h-[300px]">
+            <div className="bg-white rounded-t-3xl flex items-center justify-between mb-3">
               <h3 className="text-base sm:text-lg font-bold text-gray-800">AI返信候補</h3>
               <button
                 onClick={() => setShowCandidates(false)}
@@ -574,7 +622,11 @@ export default function Chat() {
                 </svg>
               </button>
             </div>
-            <div className="space-y-3 overflow-y-auto">
+            <div
+              ref={emblaRef}
+              className="overflow-hidden"
+            >
+              <div className="grid grid-flow-col auto-cols-[85vw] gap-3">
               {replyCandidates.map((candidate, index) => (
                 <div
                   key={candidate.id}
@@ -649,6 +701,20 @@ export default function Chat() {
                     </div>
                   )}
                 </div>
+              ))}
+              </div>
+            </div>
+            {/* ドットインジケーター */}
+            <div className="grid grid-flow-col justify-center gap-2 pt-3">
+              {replyCandidates.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleDotClick(index)}
+                  className={`w-2 h-2 rounded-full transition-colors ${
+                    currentSlideIndex === index ? 'bg-tapple-pink' : 'bg-gray-300'
+                  }`}
+                  aria-label={`候補 ${index + 1} に移動`}
+                />
               ))}
             </div>
           </div>
