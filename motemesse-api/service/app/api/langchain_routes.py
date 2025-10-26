@@ -101,6 +101,14 @@ class GenerateInitialGreetingResponse(BaseModel):
     replies: List[Reply]
     context: dict
 
+class GenerateFollowUpReplyResponse(BaseModel):
+    status: str
+    replies: List[Reply]
+    context: dict
+
+class FollowUpReplyRequest(BaseModel):
+    userId: int
+    selectedTargetId: int
 
 @router.post("/generate-reply", response_model=GenerateReplyResponse)
 async def generate_reply(request: ReplyRequest, db: Session = Depends(get_db)):
@@ -166,8 +174,6 @@ async def generate_reply(request: ReplyRequest, db: Session = Depends(get_db)):
 {target_profile}
 
 ## 入力情報
-- ユーザー情報: {user_profile}
-- 相手の女性情報: {target_profile}
 - 相手の最新メッセージ: {message}
 - 返信通数: {message_count}通目
 - 会話履歴: {conversation_history}
@@ -379,7 +385,7 @@ async def generate_initial_greeting(request: InitialGreetingRequest, db: Session
 {format_instructions}"""),
             ("human", "初回挨拶メッセージを生成してください。")
         ])
-        
+
         # 3. OpenAI GPT-4.1-miniで初回挨拶生成
         api_key = os.getenv("OPENAI_API_KEY")
         if not api_key:
@@ -452,3 +458,120 @@ def generate_content(
         "generated_content": f"生成されたコンテンツ: {prompt}",
         "model": "langchain-model"
     }
+
+@router.post("/follow-up-reply", response_model=GenerateFollowUpReplyResponse)
+async def generate_follow_up_reply(request: FollowUpReplyRequest, db: Session = Depends(get_db)):
+    """
+    追撃メッセージを生成（女性からの返信がない状態での追加メッセージ）
+    """
+    try:
+        # リクエストパラメータを使用
+        user_id = request.userId
+        target_id = request.selectedTargetId
+
+        print(f"追撃メッセージリクエスト: userId={user_id}, selectedTargetId={target_id}")
+
+        # データベースからユーザー情報を取得
+        user = crud.get_user_by_id(db, user_id=user_id)
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+
+        # データベースからターゲット情報を取得
+        target = crud.get_target_by_id(db, target_id=target_id)
+        if not target:
+            raise HTTPException(status_code=404, detail="Target not found")
+
+        # データベースから会話履歴を取得
+        conversation = crud.get_conversation(db, user_id=user_id, target_id=target_id)
+        if not conversation or len(conversation) == 0:
+            raise HTTPException(status_code=400, detail="No conversation history found")
+
+        # 最後の自分のメッセージを取得
+        last_conversation = conversation[-1]
+        last_male_reply = last_conversation.male_reply
+
+        # user.toneを文字列に変換
+        user_tone_text = get_tone_text(user.tone)
+
+        # 会話履歴の整形（直近10件）
+        history_items = conversation[-10:] if len(conversation) > 10 else conversation
+        conversation_history_text = "\n".join([
+            f"彼女: {c.female_message}\nあなた: {c.male_reply}" for c in history_items
+        ])
+
+        # 2. LangChainでプロンプトを構築（追撃メッセージ専用）
+        output_parser = PydanticOutputParser(pydantic_object=ReplyResponse)
+
+        prompt = ChatPromptTemplate.from_messages([
+            ("system", """あなたは相手から返信がない状況で、自然で効果的な**追撃メッセージ**を生成する専門AIです。**出力はそのまま送信**されます。プレースホルダ（<<< >>>）や角括弧、内部注釈は出力禁止。
+
+## 入力情報
+- ユーザー情報: {user_profile}
+- 相手の女性情報: {target_profile}
+- これまでの会話履歴（直近）: {conversation_history}
+- 最後に送った自分のメッセージ: {last_male_reply}
+- 希望する口調: {user_tone}
+
+## 追撃メッセージ原則（画像テンプレ反映）
+1) 導入は**「埋もれちゃいましたかね？」**等の軽い前置きで、相手の負担感を下げる。
+2) **誠実な理由**を一言：「プロフィールを見て気になってます」「雰囲気が素敵だと思って」など。
+3) **話題は食／場所のみ**に限定（カフェ・ご飯・近場エリア）。
+4) **催促表現禁止**（「返信ください」「見てますか」等NG）。
+5) 文字数: **50–100文字**。質問は**0–1個**。絵文字0–2個。
+
+## 出力要件（3パターン）
+1) **カジュアル追撃**（「埋もれちゃいましたかね？」＋食/場所の一言）
+2) **質問はしない（「埋もれちゃいましたかね？」のみ許容）**
+2) **丁寧追撃**
+3) **話題転換追撃**（前回とかぶらない**食/場所**の角度）
+- 各候補は独立した一通の文章（50–100字）。
+- **食／場所以外の話題、二択、固有名詞、プレースホルダは禁止**。
+
+{format_instructions}"""),
+            ("human", "追撃メッセージを生成してください。")
+        ])
+
+        # 3. OpenAI GPT-4.1で追撃メッセージ生成
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            raise HTTPException(status_code=500, detail="OpenAI API key not configured")
+
+        llm = ChatOpenAI(
+            model="gpt-4.1",
+            temperature=0.7,
+            top_p=0.9,
+            frequency_penalty=0.4,
+            presence_penalty=0.6,
+            api_key=api_key
+        )
+
+        # 4. チェーンを実行
+        chain = prompt | llm | output_parser
+
+        result = chain.invoke({
+            "user_profile": format_user_profile(user),
+            "target_profile": format_target_profile(target),
+            "user_tone": user_tone_text,
+            "conversation_history": conversation_history_text,
+            "last_male_reply": last_male_reply,
+            "format_instructions": output_parser.get_format_instructions()
+        })
+
+        # 5. レスポンスを返す
+        return GenerateFollowUpReplyResponse(
+            status="success",
+            replies=result.replies,
+            context={
+                "userName": user.name or "ユーザー",
+                "targetName": target.name,
+                "userAge": user.age,
+                "targetAge": target.age,
+                "messageType": "follow_up",
+                "toneStyle": user_tone_text
+            }
+        )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to generate follow-up reply: {str(e)}")

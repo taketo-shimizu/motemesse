@@ -7,7 +7,7 @@ import { useUserStore } from '@/store/user';
 import { useChatStore } from '@/store/chat';
 import { useShallow } from 'zustand/react/shallow';
 import useEmblaCarousel from 'embla-carousel-react';
-
+import TextareaAutosize from 'react-textarea-autosize';
 
 export default function Chat() {
   const { targets, selectedTargetId, isLoading: isLoadingTargets } = useTargetsStore(
@@ -91,6 +91,21 @@ export default function Chat() {
 
   // スクリーンショットアップロード関連のstate
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [inputHeight, setInputHeight] = useState(60);
+
+  useEffect(() => {
+    if (!textareaRef.current) return;
+    const el = textareaRef.current;
+    const resizeObserver = new ResizeObserver(() => {
+      setInputHeight(el.offsetHeight);
+    });
+    resizeObserver.observe(el);
+    setInputHeight(el.offsetHeight);
+
+    return () => resizeObserver.disconnect();
+  }, []);
 
   // 返信候補スライダー関連（Embla Carousel）
   const [emblaRef, emblaApi] = useEmblaCarousel({
@@ -305,6 +320,45 @@ export default function Chat() {
     }
   };
 
+  const handleGenerateFollowUpReply = async () => {
+    if (!user || !selectedTargetId) {
+      setError('女性を選択してください');
+      return;
+    }
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await fetchWithRetry('/api/proxy/langchain/follow-up-reply', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: user.id,
+          selectedTargetId,
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('追撃メッセージの生成に失敗しました');
+      }
+
+      const data = await response.json();
+      const candidates = data.replies.map((reply: { id: number; text: string }) => ({
+        ...reply,
+        isEditing: false,
+        editText: reply.text
+      }));
+      setReplyCandidates(candidates);
+      setShowCandidates(true);
+    } catch (error) {
+      console.error('追撃メッセージの生成に失敗しました:', error);
+      setError('追撃メッセージの生成中にエラーが発生しました。サーバーが起動中の可能性があります。もう一度お試しください。');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // 返信候補を編集
   const handleEditCandidate = (id: number, text: string) => {
     updateReplyCandidate(id, { editText: text });
@@ -503,7 +557,7 @@ export default function Chat() {
             </div>
           ) : (
             <div className="space-y-4">
-              {conversations.map((conversation) => (
+              {conversations.map((conversation, index) => (
                 <div key={conversation.id} className="space-y-3">
                   {/* 女性からのメッセージ */}
                   {conversation.femaleMessage && conversation.femaleMessage.trim() !== '' && (
@@ -522,12 +576,23 @@ export default function Chat() {
                       <div className="bg-tapple-pink text-white rounded-[20px] rounded-tr-[4px] p-3 shadow-sm">
                         <p className="text-xs leading-relaxed whitespace-pre-wrap">{conversation.maleReply}</p>
                       </div>
-                      <button
-                        onClick={() => handleCopyMessage(conversation.maleReply)}
-                        className="text-xs text-gray-400 hover:text-gray-600"
-                      >
-                        コピー
-                      </button>
+                      <div className='flex gap-2'>
+                        <button
+                          onClick={() => handleCopyMessage(conversation.maleReply)}
+                          className="text-xs text-gray-400 hover:text-gray-600"
+                        >
+                          コピー
+                        </button>
+                        {index === conversations.length - 1 && (
+                          <button
+                            onClick={handleGenerateFollowUpReply}
+                            disabled={isGeneratingInitial}
+                            className="text-xs text-gray-400 hover:text-gray-600"
+                          >
+                            追撃
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -543,7 +608,7 @@ export default function Chat() {
         </div>
 
         {/* メッセージ入力エリア */}
-        <div className="bg-white p-2 h-[60px]">
+        <div className="bg-white p-2">
           <div className="flex items-center gap-2 h-full">
             {/* スクリーンショットアップロードボタン */}
             <input
@@ -572,14 +637,16 @@ export default function Chat() {
               )}
             </button>
 
-            <input
-              type="text"
+            <TextareaAutosize
+              ref={textareaRef} 
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSendMessage()}
-              placeholder={selectedTarget ? "相手からのメッセージ" : "相手を選択してください"}
-              className="flex-1 bg-gray-100 rounded-full px-4 py-2.5 text-base focus:outline-none focus:bg-white focus:ring-1 focus:ring-gray-300"
+              placeholder={selectedTarget ? '相手からのメッセージ' : '相手を選択してください'}
+              minRows={1}
+              maxRows={5}
               disabled={isLoading || !selectedTarget}
+              className="flex-1 bg-gray-100 rounded-3xl px-4 py-2.5 text-base focus:outline-none
+                         focus:bg-white focus:ring-1 focus:ring-gray-300 resize-none overflow-y-auto"
             />
             <button
               onClick={handleSendMessage}
@@ -601,7 +668,7 @@ export default function Chat() {
         </div>
 
         {/* バナー広告エリア */}
-        <div className="bg-white border-t border-gray-200 p-2 flex justify-center items-center overflow-hidden">
+        <div className="bg-white border-t border-gray-200 flex justify-center items-center overflow-hidden">
           {/* a8.netの広告コードをここに配置 */}
           <div className="w-[350px] h-[80px] bg-gray-100 flex items-center justify-center text-gray-400 text-xs">
             広告エリア (350×80)
@@ -610,7 +677,9 @@ export default function Chat() {
 
         {/* 返信候補オーバーレイ */}
         {showCandidates && replyCandidates.length > 0 && (
-          <div className="grid grid-rows-[auto_1fr_auto] absolute bottom-[60px] left-0 right-0 bg-white shadow-2xl z-10 rounded-t-3xl p-4 max-h-[300px]">
+          <div 
+            className="grid grid-rows-[auto_1fr_auto] absolute left-0 right-0 bg-white shadow-2xl z-10 rounded-t-3xl p-4 max-h-[300px]"
+            style={{ bottom: `${inputHeight + 80 + 8}px` }}          >
             <div className="bg-white rounded-t-3xl flex items-center justify-between mb-3">
               <h3 className="text-base sm:text-lg font-bold text-gray-800">AI返信候補</h3>
               <button
