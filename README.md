@@ -32,4 +32,7 @@ python main.py
 ## URL
 https://motemesse.vercel.app
 
+本アプリは スマートフォンデバイスでの利用を前提としたデザイン になっています。
+PCからも動作しますが、レイアウトや操作性はスマホ表示を基準に最適化されています。
+
 © 2025 清水 威斗 (Taketo Shimizu). All rights reserved.
