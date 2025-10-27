@@ -1,6 +1,6 @@
 　# モテメッセ
 
-マッチングアプリでのメッセージ返信を支援するAIアシスタントサービス（モノレポ版）
+マッチングアプリでのメッセージ返信を支援するAIアシスタントサービス
 
 ## プロジェクト構成
 
@@ -29,9 +29,7 @@ python main.py
 - フロントエンド: Vercel（Root: `motemesse-front`）
 - バックエンド: Render（Root: `motemesse-api`）
 
-## 元のリポジトリ
-
-- Frontend: https://github.com/YOUR_USERNAME/motemesse-front
-- Backend: https://github.com/YOUR_USERNAME/motemesse-api
+## URL
+https://motemesse.vercel.app
 
 © 2025 清水 威斗 (Taketo Shimizu). All rights reserved.
