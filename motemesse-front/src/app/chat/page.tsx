@@ -25,7 +25,6 @@ export default function Chat() {
     }))
   );
   const initialization = isLoadingTargets || isLoadingUser;
-  console.log('isLoadingTargets', isLoadingTargets);
 
   const {
     message,
@@ -679,7 +678,7 @@ export default function Chat() {
         {showCandidates && replyCandidates.length > 0 && (
           <div 
             className="grid grid-rows-[auto_1fr_auto] absolute left-0 right-0 bg-white shadow-2xl z-10 rounded-t-3xl p-4 max-h-[300px]"
-            style={{ bottom: `${inputHeight + 80 + 8}px` }}          >
+            style={{ bottom: `${inputHeight + 80 + 12}px` }}          >
             <div className="bg-white rounded-t-3xl flex items-center justify-between mb-3">
               <h3 className="text-base sm:text-lg font-bold text-gray-800">AI返信候補</h3>
               <button
