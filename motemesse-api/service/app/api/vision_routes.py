@@ -4,7 +4,6 @@ from typing import Optional, Dict, Any, List
 from sqlalchemy.orm import Session
 import base64
 import os
-import json
 from dotenv import load_dotenv
 from openai import OpenAI
 
@@ -45,6 +44,10 @@ class ProfileAnalysisResponse(BaseModel):
     confidence: float
 
 
+class ChatMessageExtraction(BaseModel):
+    latestFemaleMessage: Optional[str] = None
+
+
 class ChatScreenshotRequest(BaseModel):
     image: str  # Single Base64 encoded image
     userId: int
@@ -65,31 +68,9 @@ async def analyze_profile_image(request: ProfileImageRequest):
     try:
         # プロンプトの準備
         system_prompt = """あなたはマッチングアプリのプロフィール画面から情報を正確に抽出する専門家です。
-複数の画像が提供される場合は、全ての画像から情報を統合して抽出してください。
-画像から以下の情報を日本語で抽出してJSON形式で返してください：
-
-{
-  "name": "名前",
-  "age": 年齢（数値）,
-  "job": "職業",
-  "hobby": "趣味",
-  "residence": "居住地",
-  "workplace": "勤務地",
-  "bloodType": "血液型",
-  "education": "学歴",
-  "workType": "仕事の種類",
-  "holiday": "休日",
-  "marriageHistory": "結婚歴",
-  "hasChildren": "子供の有無",
-  "smoking": "煙草",
-  "drinking": "お酒",
-  "livingWith": "同居人",
-  "marriageIntention": "結婚に対する意思",
-  "selfIntroduction": "自己紹介文"
-}
 
 注意事項：
-- 複数の画像から情報を統合してください
+- 複数の画像が提供される場合は、全ての画像から情報を統合してください
 - 画像に表示されていない項目はnullとして返してください
 - 年齢は数値型で返してください
 - 各項目は日本語の文字列で返してください
@@ -116,8 +97,8 @@ async def analyze_profile_image(request: ProfileImageRequest):
                 }
             })
 
-        # Vision APIを呼び出し
-        response = client.chat.completions.create(
+        # Vision APIを呼び出し（Structured Outputs使用）
+        response = client.beta.chat.completions.parse(
             model="gpt-4o-mini",
             messages=[
                 {
@@ -130,18 +111,15 @@ async def analyze_profile_image(request: ProfileImageRequest):
                 }
             ],
             max_tokens=1500,  # 複数画像の場合、より多くのトークンが必要になる可能性
-            response_format={"type": "json_object"}
+            response_format=ProfileData
         )
 
-        # レスポンスの解析
-        extracted_data = json.loads(response.choices[0].message.content)
-        
-        # ProfileDataモデルに変換
-        profile_data = ProfileData(**extracted_data)
-        
+        # レスポンスの解析（Structured Outputsで直接Pydanticモデルとして取得）
+        profile_data = response.choices[0].message.parsed
+
         # 抽出された項目数から信頼度を計算
         total_fields = 17
-        extracted_fields = sum(1 for field in extracted_data.values() if field is not None)
+        extracted_fields = sum(1 for value in profile_data.model_dump().values() if value is not None)
         confidence = extracted_fields / total_fields
 
         return ProfileAnalysisResponse(
@@ -180,16 +158,9 @@ async def analyze_chat_screenshot(
         # プロンプトの準備
         system_prompt = """あなたはマッチングアプリのチャット画面から最新の女性メッセージを抽出する専門家です。
 
-以下のJSON形式で返してください：
-{
-  "latestFemaleMessage": "最新の女性メッセージ内容" または null
-}
-
 重要な判定ルール：
-- 左側の吹き出しが女性（相手）のメッセージです
-- 右側の吹き出しは男性（自分）のメッセージです
-- 画面に表示されている最も下にある左側の吹き出し（女性メッセージ）のテキストのみを抽出してください
-- 女性のメッセージが画面に存在しない場合はnullを返してください
+- 画面に表示されている最も下にある吹き出しのテキストのみを抽出してください
+- メッセージが画面に存在しない場合はnullを返してください
 
 注意事項：
 - 改行も保持
@@ -212,8 +183,8 @@ async def analyze_chat_screenshot(
             }
         ]
 
-        # Vision APIを呼び出し
-        response = client.chat.completions.create(
+        # Vision APIを呼び出し（Structured Outputs使用）
+        response = client.beta.chat.completions.parse(
             model="gpt-4o-mini",
             messages=[
                 {
@@ -227,12 +198,12 @@ async def analyze_chat_screenshot(
             ],
             temperature=0.3,
             max_tokens=500,
-            response_format={"type": "json_object"}
+            response_format=ChatMessageExtraction
         )
 
-        # レスポンスの解析
-        extracted_data = json.loads(response.choices[0].message.content)
-        latest_female_message = extracted_data.get('latestFemaleMessage')
+        # レスポンスの解析（Structured Outputsで直接Pydanticモデルとして取得）
+        extracted_data = response.choices[0].message.parsed
+        latest_female_message = extracted_data.latestFemaleMessage
         print(latest_female_message, 'latest_female_message')
         return ChatScreenshotResponse(
             status="success",

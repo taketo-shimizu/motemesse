@@ -7,7 +7,6 @@ from dotenv import load_dotenv
 
 from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
-from langchain.output_parsers import PydanticOutputParser
 from pydantic import Field
 
 from ...modules.database import get_db
@@ -150,7 +149,6 @@ async def generate_reply(request: ReplyRequest, db: Session = Depends(get_db)):
         user_tone_text = get_tone_text(user.tone)
         print(user_tone_text, 'user_tone_text')
         # 2. LangChainでプロンプトを構築
-        output_parser = PydanticOutputParser(pydantic_object=ReplyResponse)
         # メッセージの文字数を計算
         message_length = len(message)
         # 会話履歴の整形（直近10件）
@@ -252,7 +250,7 @@ async def generate_reply(request: ReplyRequest, db: Session = Depends(get_db)):
 - 初回デートは公共の場所、60-90分以内
 - 相手の境界線と意向を最優先
 - 差別的表現や過度な身体的言及の禁止
-{format_instructions}"""),
+"""),
             ("system", "これまでの会話履歴:\n{conversation_history}"),
             ("human", "女性からのメッセージ: {message}")
         ])
@@ -267,9 +265,9 @@ async def generate_reply(request: ReplyRequest, db: Session = Depends(get_db)):
             frequency_penalty=0.4,
             presence_penalty=0.6,
             api_key=api_key
-        )
+        ).with_structured_output(ReplyResponse)
         # 4. チェーンを実行
-        chain = prompt | llm | output_parser
+        chain = prompt | llm
         result = chain.invoke({
             "user_profile": format_user_profile(user),
             "target_profile": format_target_profile(target),
@@ -278,8 +276,7 @@ async def generate_reply(request: ReplyRequest, db: Session = Depends(get_db)):
             "message_length": message_length,
             "message_count": message_count,
             "conversation_history": conversation_history_text,
-            "greeting_constraint": greeting_constraint,
-            "format_instructions": output_parser.get_format_instructions()
+            "greeting_constraint": greeting_constraint
         })
         print(user.smoking, 'user')
         # 5. レスポンスを返す
@@ -323,10 +320,8 @@ async def generate_initial_greeting(request: InitialGreetingRequest, db: Session
         
         # user.toneを文字列に変換
         user_tone_text = get_tone_text(user.tone)
-        
+
         # 2. LangChainでプロンプトを構築（初回挨拶専用）
-        output_parser = PydanticOutputParser(pydantic_object=ReplyResponse)
-        
         prompt = ChatPromptTemplate.from_messages([
             ("system", """あなたは初回メッセージで魅力的な第一印象を与え、相手が返信したくなる挨拶を作成する専門AIです。やました式（負担軽減）とヘルガ式（具体性重視）を統合し、相手のタイプに応じて最適なアプローチを選択します。
 
@@ -381,8 +376,7 @@ async def generate_initial_greeting(request: InitialGreetingRequest, db: Session
 - 押し付け感がないか
 ## 出力要件
 3種類のメッセージ（カジュアル・丁寧・ユーモア）を生成し、それぞれ上記制約をすべて満たすこと。
-
-{format_instructions}"""),
+"""),
             ("human", "初回挨拶メッセージを生成してください。")
         ])
 
@@ -390,7 +384,7 @@ async def generate_initial_greeting(request: InitialGreetingRequest, db: Session
         api_key = os.getenv("OPENAI_API_KEY")
         if not api_key:
             raise HTTPException(status_code=500, detail="OpenAI API key not configured")
-        
+
         llm = ChatOpenAI(
             model="gpt-4.1",
             temperature=0.7,
@@ -398,16 +392,15 @@ async def generate_initial_greeting(request: InitialGreetingRequest, db: Session
             frequency_penalty=0.4,
             presence_penalty=0.6,
             api_key=api_key
-        )
-        
+        ).with_structured_output(ReplyResponse)
+
         # 4. チェーンを実行
-        chain = prompt | llm | output_parser
-        
+        chain = prompt | llm
+
         result = chain.invoke({
             "user_profile": format_user_profile(user),
             "target_profile": format_target_profile(target),
-            "user_tone": user_tone_text,
-            "format_instructions": output_parser.get_format_instructions()
+            "user_tone": user_tone_text
         })
         
         # 5. レスポンスを返す
@@ -500,8 +493,6 @@ async def generate_follow_up_reply(request: FollowUpReplyRequest, db: Session = 
         ])
 
         # 2. LangChainでプロンプトを構築（追撃メッセージ専用）
-        output_parser = PydanticOutputParser(pydantic_object=ReplyResponse)
-
         prompt = ChatPromptTemplate.from_messages([
             ("system", """あなたは相手から返信がない状況で、自然で効果的な**追撃メッセージ**を生成する専門AIです。**出力はそのまま送信**されます。プレースホルダ（<<< >>>）や角括弧、内部注釈は出力禁止。
 
@@ -526,8 +517,7 @@ async def generate_follow_up_reply(request: FollowUpReplyRequest, db: Session = 
 3) **話題転換追撃**（前回とかぶらない**食/場所**の角度）
 - 各候補は独立した一通の文章（50–100字）。
 - **食／場所以外の話題、二択、固有名詞、プレースホルダは禁止**。
-
-{format_instructions}"""),
+"""),
             ("human", "追撃メッセージを生成してください。")
         ])
 
@@ -543,18 +533,17 @@ async def generate_follow_up_reply(request: FollowUpReplyRequest, db: Session = 
             frequency_penalty=0.4,
             presence_penalty=0.6,
             api_key=api_key
-        )
+        ).with_structured_output(ReplyResponse)
 
         # 4. チェーンを実行
-        chain = prompt | llm | output_parser
+        chain = prompt | llm
 
         result = chain.invoke({
             "user_profile": format_user_profile(user),
             "target_profile": format_target_profile(target),
             "user_tone": user_tone_text,
             "conversation_history": conversation_history_text,
-            "last_male_reply": last_male_reply,
-            "format_instructions": output_parser.get_format_instructions()
+            "last_male_reply": last_male_reply
         })
 
         # 5. レスポンスを返す
