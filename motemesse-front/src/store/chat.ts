@@ -34,6 +34,8 @@ interface ChatState {
   isUploadingScreenshot: boolean;
   essentialChatUpdate: boolean;
   currentSlideIndex: number;
+  hasGeneratedOnce: boolean;
+  isRegenerating: boolean;
 
   setMessage: (message: string) => void;
   setReplyCandidates: (candidates: ReplyCandidate[]) => void;
@@ -48,6 +50,8 @@ interface ChatState {
   setIsUploadingScreenshot: (isUploading: boolean) => void;
   setEssentialChatUpdate: (essentialChatUpdate: boolean) => void;
   setCurrentSlideIndex: (index: number) => void;
+  setHasGeneratedOnce: (hasGenerated: boolean) => void;
+  setIsRegenerating: (isRegenerating: boolean) => void;
 
   updateReplyCandidate: (id: number, updates: Partial<ReplyCandidate>) => void;
   resetChatState: () => void;
@@ -68,6 +72,8 @@ export const useChatStore = create<ChatState>((set) => ({
   isUploadingScreenshot: false,
   essentialChatUpdate: true,
   currentSlideIndex: 0,
+  hasGeneratedOnce: false,
+  isRegenerating: false,
 
   setMessage: (message) => set({ message }),
   setReplyCandidates: (candidates) => set({ replyCandidates: candidates }),
@@ -81,6 +87,8 @@ export const useChatStore = create<ChatState>((set) => ({
   setShowIntentOptions: (show) => set({ showIntentOptions: show }),
   setIsUploadingScreenshot: (isUploading) => set({ isUploadingScreenshot: isUploading }),
   setEssentialChatUpdate: (essentialChatUpdate) => set({ essentialChatUpdate: essentialChatUpdate }),
+  setHasGeneratedOnce: (hasGenerated) => set({ hasGeneratedOnce: hasGenerated }),
+  setIsRegenerating: (isRegenerating) => set({ isRegenerating: isRegenerating }),
 
   updateReplyCandidate: (id, updates) =>
     set((state) => ({
@@ -96,7 +104,9 @@ export const useChatStore = create<ChatState>((set) => ({
       message: '',
       error: null,
       currentFemaleMessage: '',
-      showIntentOptions: false
+      showIntentOptions: false,
+      hasGeneratedOnce: false,
+      isRegenerating: false
   }),
 
   addConversation: (conversation: Conversation) => {
@@ -106,4 +116,5 @@ export const useChatStore = create<ChatState>((set) => ({
   },
 
   setCurrentSlideIndex: (index) => set({ currentSlideIndex: index }),
+
 }));

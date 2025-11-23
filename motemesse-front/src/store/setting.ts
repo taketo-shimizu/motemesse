@@ -3,21 +3,7 @@ import { create } from 'zustand';
 interface ProfileFormData {
   name: string;
   age: string;
-  job: string;
   hobby: string;
-  residence: string;
-  workplace: string;
-  bloodType: string;
-  education: string;
-  workType: string;
-  holiday: string;
-  marriageHistory: string;
-  hasChildren: string;
-  smoking: string;
-  drinking: string;
-  livingWith: string;
-  marriageIntention: string;
-  selfIntroduction: string;
 }
 
 interface SettingState {
@@ -43,21 +29,7 @@ interface SettingState {
 const initialFormData: ProfileFormData = {
   name: '',
   age: '',
-  job: '',
   hobby: '',
-  residence: '',
-  workplace: '',
-  bloodType: '',
-  education: '',
-  workType: '',
-  holiday: '',
-  marriageHistory: '',
-  hasChildren: '',
-  smoking: '',
-  drinking: '',
-  livingWith: '',
-  marriageIntention: '',
-  selfIntroduction: ''
 };
 
 export const useSettingStore = create<SettingState>((set) => ({

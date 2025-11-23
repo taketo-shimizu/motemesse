@@ -5,22 +5,7 @@ interface Target {
   name: string;
   userId: number;
   age?: number | null;
-  job?: string | null;
   hobby?: string | null;
-  residence?: string | null;
-  workplace?: string | null;
-  bloodType?: string | null;
-  education?: string | null;
-  workType?: string | null;
-  holiday?: string | null;
-  marriageHistory?: string | null;
-  hasChildren?: string | null;
-  smoking?: string | null;
-  drinking?: string | null;
-  livingWith?: string | null;
-  marriageIntention?: string | null;
-  personality?: string | null;
-  selfIntroduction?: string | null;
   createdAt: Date;
   updatedAt: Date;
 }

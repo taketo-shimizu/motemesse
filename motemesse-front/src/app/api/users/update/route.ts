@@ -12,9 +12,7 @@ export async function POST(request: Request) {
 
     const body = await request.json();
     const {
-      name, age, job, hobby, selfIntroduction,
-      residence, workplace, bloodType, education, workType, holiday,
-      marriageHistory, hasChildren, smoking, drinking, livingWith, marriageIntention
+      name, age, hobby
     } = body;
 
     // Update user profile
@@ -23,21 +21,7 @@ export async function POST(request: Request) {
       data: {
         name: name || null,
         age: age ? parseInt(age, 10) : null,
-        job: job || null,
         hobby: hobby || null,
-        selfIntroduction: selfIntroduction || null,
-        residence: residence || null,
-        workplace: workplace || null,
-        bloodType: bloodType || null,
-        education: education || null,
-        workType: workType || null,
-        holiday: holiday || null,
-        marriageHistory: marriageHistory || null,
-        hasChildren: hasChildren || null,
-        smoking: smoking || null,
-        drinking: drinking || null,
-        livingWith: livingWith || null,
-        marriageIntention: marriageIntention || null,
       }
     });
 

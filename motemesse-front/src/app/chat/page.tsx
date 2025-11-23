@@ -40,6 +40,8 @@ export default function Chat() {
     isUploadingScreenshot,
     essentialChatUpdate,
     currentSlideIndex,
+    hasGeneratedOnce,
+    isRegenerating,
     setMessage,
     setReplyCandidates,
     setConversations,
@@ -55,6 +57,8 @@ export default function Chat() {
     resetChatState,
     addConversation,
     setCurrentSlideIndex,
+    setHasGeneratedOnce,
+    setIsRegenerating,
   } = useChatStore(
     useShallow((s) => ({
       message: s.message,
@@ -70,6 +74,8 @@ export default function Chat() {
       isUploadingScreenshot: s.isUploadingScreenshot,
       essentialChatUpdate: s.essentialChatUpdate,
       currentSlideIndex: s.currentSlideIndex,
+      hasGeneratedOnce: s.hasGeneratedOnce,
+      isRegenerating: s.isRegenerating,
       setMessage: s.setMessage,
       setReplyCandidates: s.setReplyCandidates,
       setConversations: s.setConversations,
@@ -85,6 +91,8 @@ export default function Chat() {
       resetChatState: s.resetChatState,
       addConversation: s.addConversation,
       setCurrentSlideIndex: s.setCurrentSlideIndex,
+      setHasGeneratedOnce: s.setHasGeneratedOnce,
+      setIsRegenerating: s.setIsRegenerating,
     }))
   );
 
@@ -195,6 +203,12 @@ export default function Chat() {
     }
   }, [initialization, selectedTarget]);
 
+  // 再生成ボタンのハンドラー
+  const handleRegenerate = async () => {
+    setIsRegenerating(true);
+    await handleSendMessage();
+  };
+
   // 返信候補を生成
   const handleSendMessage = async () => {
     if (!user || !selectedTargetId || !message.trim()) {
@@ -234,6 +248,7 @@ export default function Chat() {
 
       setReplyCandidates(candidates);
       setShowCandidates(true);
+      setHasGeneratedOnce(true);
       //setMessage(''); // 入力欄をクリア
     } catch (error) {
       console.error('エラーが発生しました:', error);
@@ -644,12 +659,12 @@ export default function Chat() {
               minRows={1}
               maxRows={5}
               disabled={isLoading || !selectedTarget}
-              className="flex-1 bg-gray-100 rounded-3xl px-4 py-2.5 text-base focus:outline-none
+              className="flex-1 bg-gray-100 rounded-3xl px-4 py-2.5 text-xs focus:outline-none
                          focus:bg-white focus:ring-1 focus:ring-gray-300 resize-none overflow-y-auto"
             />
             <button
               onClick={handleSendMessage}
-              disabled={isLoading || !message.trim() || !selectedTarget}
+              disabled={isLoading || !message.trim() || !selectedTarget || hasGeneratedOnce}
               className="p-2 text-tapple-pink disabled:text-gray-300"
             >
               {isLoading ? (
@@ -681,14 +696,15 @@ export default function Chat() {
             style={{ bottom: `${inputHeight + 80 + 12}px` }}          >
             <div className="bg-white rounded-t-3xl flex items-center justify-between mb-3">
               <h3 className="text-base sm:text-lg font-bold text-gray-800">AI返信候補</h3>
-              <button
-                onClick={() => setShowCandidates(false)}
-                className="p-1 rounded-full hover:bg-gray-100"
-              >
-                <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+              {hasGeneratedOnce && (
+                <button
+                  onClick={handleRegenerate}
+                  disabled={isRegenerating || isLoading}
+                  className="px-4 py-2 bg-tapple-pink text-white font-bold rounded-full font-medium hover:bg-tapple-pink-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  再生成
+                </button>
+              )}
             </div>
             <div
               ref={emblaRef}

@@ -69,42 +69,14 @@ export default function FemaleSetting() {
             setFemaleFormData({
                 name: nameFromStore,
                 age: '',
-                job: '',
                 hobby: '',
-                residence: '',
-                workplace: '',
-                bloodType: '',
-                education: '',
-                workType: '',
-                holiday: '',
-                marriageHistory: '',
-                hasChildren: '',
-                smoking: '',
-                drinking: '',
-                livingWith: '',
-                marriageIntention: '',
-                selfIntroduction: ''
             });
         } else if (selectedTarget) {
             // 既存のターゲットを編集する場合
             setFemaleFormData({
                 name: selectedTarget.name || '',
                 age: selectedTarget.age?.toString() || '',
-                job: selectedTarget.job || '',
                 hobby: selectedTarget.hobby || '',
-                residence: selectedTarget.residence || '',
-                workplace: selectedTarget.workplace || '',
-                bloodType: selectedTarget.bloodType || '',
-                education: selectedTarget.education || '',
-                workType: selectedTarget.workType || '',
-                holiday: selectedTarget.holiday || '',
-                marriageHistory: selectedTarget.marriageHistory || '',
-                hasChildren: selectedTarget.hasChildren || '',
-                smoking: selectedTarget.smoking || '',
-                drinking: selectedTarget.drinking || '',
-                livingWith: selectedTarget.livingWith || '',
-                marriageIntention: selectedTarget.marriageIntention || '',
-                selfIntroduction: selectedTarget.selfIntroduction || ''
             });
         } else {
             // 選択されていない場合はフォームをクリア
@@ -115,27 +87,6 @@ export default function FemaleSetting() {
     // フォーム入力の処理
     const handleInputChange = (field: string, value: string) => {
         updateFemaleField(field, value);
-    };
-
-    // 画像解析結果を受け取って自動入力
-    const handleImageAnalyzed = (profileData: ProfileData) => {
-        if (profileData.name) updateFemaleField('name', profileData.name);
-        if (profileData.age) updateFemaleField('age', profileData.age.toString());
-        if (profileData.job) updateFemaleField('job', profileData.job);
-        if (profileData.hobby) updateFemaleField('hobby', profileData.hobby);
-        if (profileData.residence) updateFemaleField('residence', profileData.residence);
-        if (profileData.workplace) updateFemaleField('workplace', profileData.workplace);
-        if (profileData.bloodType) updateFemaleField('bloodType', profileData.bloodType);
-        if (profileData.education) updateFemaleField('education', profileData.education);
-        if (profileData.workType) updateFemaleField('workType', profileData.workType);
-        if (profileData.holiday) updateFemaleField('holiday', profileData.holiday);
-        if (profileData.marriageHistory) updateFemaleField('marriageHistory', profileData.marriageHistory);
-        if (profileData.hasChildren) updateFemaleField('hasChildren', profileData.hasChildren);
-        if (profileData.smoking) updateFemaleField('smoking', profileData.smoking);
-        if (profileData.drinking) updateFemaleField('drinking', profileData.drinking);
-        if (profileData.livingWith) updateFemaleField('livingWith', profileData.livingWith);
-        if (profileData.marriageIntention) updateFemaleField('marriageIntention', profileData.marriageIntention);
-        if (profileData.selfIntroduction) updateFemaleField('selfIntroduction', profileData.selfIntroduction);
     };
 
     // 保存処理
@@ -162,21 +113,7 @@ export default function FemaleSetting() {
                     body: JSON.stringify({
                         name: femaleFormData.name,
                         age: femaleFormData.age,
-                        job: femaleFormData.job,
                         hobby: femaleFormData.hobby,
-                        residence: femaleFormData.residence,
-                        workplace: femaleFormData.workplace,
-                        bloodType: femaleFormData.bloodType,
-                        education: femaleFormData.education,
-                        workType: femaleFormData.workType,
-                        holiday: femaleFormData.holiday,
-                        marriageHistory: femaleFormData.marriageHistory,
-                        hasChildren: femaleFormData.hasChildren,
-                        smoking: femaleFormData.smoking,
-                        drinking: femaleFormData.drinking,
-                        livingWith: femaleFormData.livingWith,
-                        marriageIntention: femaleFormData.marriageIntention,
-                        selfIntroduction: femaleFormData.selfIntroduction,
                     }),
                 });
 
@@ -214,21 +151,7 @@ export default function FemaleSetting() {
                         id: selectedTarget.id,
                         name: femaleFormData.name,
                         age: femaleFormData.age,
-                        job: femaleFormData.job,
                         hobby: femaleFormData.hobby,
-                        residence: femaleFormData.residence,
-                        workplace: femaleFormData.workplace,
-                        bloodType: femaleFormData.bloodType,
-                        education: femaleFormData.education,
-                        workType: femaleFormData.workType,
-                        holiday: femaleFormData.holiday,
-                        marriageHistory: femaleFormData.marriageHistory,
-                        hasChildren: femaleFormData.hasChildren,
-                        smoking: femaleFormData.smoking,
-                        drinking: femaleFormData.drinking,
-                        livingWith: femaleFormData.livingWith,
-                        marriageIntention: femaleFormData.marriageIntention,
-                        selfIntroduction: femaleFormData.selfIntroduction,
                     }),
                 });
 
@@ -290,316 +213,51 @@ export default function FemaleSetting() {
                         </div>
                     )}
 
-                    {/* スクリーンショットアップロード */}
-                    {(selectedTarget || isNewMode) && (
-                        <div className="mb-4 bg-white rounded-xl p-3 shadow-sm border border-gray-100">
-                            <ImageUploadForProfile
-                                onImageAnalyzed={handleImageAnalyzed}
-                                isAnalyzing={isFemaleAnalyzing}
-                                setIsAnalyzing={setIsFemaleAnalyzing}
+                    {/* 基本情報セクション */}
+                    <div className="bg-white rounded-xl p-4 shadow-sm mb-3 border border-gray-100 space-y-3">
+                        {/* 名前 */}
+                        <div>
+                            <label className="block text-xs font-medium text-gray-700 mb-1">
+                                お名前 <span className="text-tapple-pink">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                className="w-full border border-gray-200 rounded-full px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-tapple-pink focus:border-transparent transition-all"
+                                placeholder="例: 田中花子"
+                                value={femaleFormData.name}
+                                onChange={(e) => handleInputChange('name', e.target.value)}
+                                disabled={!selectedTarget && !isNewMode}
+                                required
                             />
                         </div>
-                    )}
 
-                    {/* 基本情報セクション */}
-                    <div className="bg-white rounded-xl p-4 shadow-sm mb-3 border border-gray-100">
-                        <h3 className="text-sm font-bold text-gray-800 mb-3 flex items-center">
-                            <span className="w-6 h-6 bg-tapple-pink-pale rounded-full flex items-center justify-center mr-2 text-xs">
-                                <span className="text-tapple-pink">1</span>
-                            </span>
-                            基本情報
-                        </h3>
-                        <div className="space-y-3">
-                            {/* 名前 */}
-                            <div>
-                                <label className="block text-xs font-medium text-gray-700 mb-1">
-                                    お名前 <span className="text-tapple-pink">*</span>
-                                </label>
-                                <input
-                                    type="text"
-                                    className="w-full border border-gray-200 rounded-full px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-tapple-pink focus:border-transparent transition-all"
-                                    placeholder="例: 田中花子"
-                                    value={femaleFormData.name}
-                                    onChange={(e) => handleInputChange('name', e.target.value)}
-                                    disabled={!selectedTarget && !isNewMode}
-                                    required
-                                />
-                            </div>
-
-                            {/* 年齢・血液型 */}
-                            <div className="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label className="block text-xs font-medium text-gray-700 mb-1">
-                                        推定年齢 <span className="text-tapple-pink">*</span>
-                                    </label>
-                                    <input
-                                        type="number"
-                                        className="w-full border border-gray-200 rounded-full px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-tapple-pink focus:border-transparent transition-all"
-                                        placeholder="例: 25"
-                                        value={femaleFormData.age}
-                                        onChange={(e) => handleInputChange('age', e.target.value)}
-                                        disabled={!selectedTarget && !isNewMode}
-                                        required
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-medium text-gray-700 mb-1">血液型</label>
-                                    <select
-                                        className="w-full border border-gray-200 rounded-full px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-tapple-pink focus:border-transparent transition-all appearance-none bg-white"
-                                        value={femaleFormData.bloodType}
-                                        onChange={(e) => handleInputChange('bloodType', e.target.value)}
-                                        disabled={!selectedTarget && !isNewMode}
-                                    >
-                                        <option value="">選択</option>
-                                        <option value="A型">A型</option>
-                                        <option value="B型">B型</option>
-                                        <option value="O型">O型</option>
-                                        <option value="AB型">AB型</option>
-                                        <option value="不明">不明</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            {/* 居住地・勤務地 */}
-                            <div className="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label className="block text-xs font-medium text-gray-700 mb-1">居住地</label>
-                                    <input
-                                        type="text"
-                                        className="w-full border border-gray-200 rounded-full px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-tapple-pink focus:border-transparent transition-all"
-                                        placeholder="東京都"
-                                        value={femaleFormData.residence}
-                                        onChange={(e) => handleInputChange('residence', e.target.value)}
-                                        disabled={!selectedTarget && !isNewMode}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-medium text-gray-700 mb-1">勤務地</label>
-                                    <input
-                                        type="text"
-                                        className="w-full border border-gray-200 rounded-full px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-tapple-pink focus:border-transparent transition-all"
-                                        placeholder="新宿区"
-                                        value={femaleFormData.workplace}
-                                        onChange={(e) => handleInputChange('workplace', e.target.value)}
-                                        disabled={!selectedTarget && !isNewMode}
-                                    />
-                                </div>
-                            </div>
+                        {/* 年齢・血液型 */}
+                        <div>
+                            <label className="block text-xs font-medium text-gray-700 mb-1">
+                                年齢 <span className="text-tapple-pink">*</span>
+                            </label>
+                            <input
+                                type="number"
+                                className="w-full border border-gray-200 rounded-full px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-tapple-pink focus:border-transparent transition-all"
+                                placeholder="例: 25"
+                                value={femaleFormData.age}
+                                onChange={(e) => handleInputChange('age', e.target.value)}
+                                disabled={!selectedTarget && !isNewMode}
+                                required
+                            />
                         </div>
-                    </div>
 
-                    {/* 仕事・学歴セクション */}
-                    <div className="bg-white rounded-xl p-4 shadow-sm mb-3 border border-gray-100">
-                        <h3 className="text-sm font-bold text-gray-800 mb-3 flex items-center">
-                            <span className="w-6 h-6 bg-tapple-pink-pale rounded-full flex items-center justify-center mr-2 text-xs">
-                                <span className="text-tapple-pink">2</span>
-                            </span>
-                            仕事・学歴
-                        </h3>
-                        <div className="space-y-3">
-                            <div className="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label className="block text-xs font-medium text-gray-700 mb-1">職業</label>
-                                    <input
-                                        type="text"
-                                        className="w-full border border-gray-200 rounded-full px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-tapple-pink focus:border-transparent transition-all"
-                                        placeholder="看護師"
-                                        value={femaleFormData.job}
-                                        onChange={(e) => handleInputChange('job', e.target.value)}
-                                        disabled={!selectedTarget && !isNewMode}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-medium text-gray-700 mb-1">仕事の種類</label>
-                                    <select
-                                        className="w-full border border-gray-200 rounded-full px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-tapple-pink focus:border-transparent transition-all appearance-none bg-white"
-                                        value={femaleFormData.workType}
-                                        onChange={(e) => handleInputChange('workType', e.target.value)}
-                                        disabled={!selectedTarget && !isNewMode}
-                                    >
-                                        <option value="">選択</option>
-                                        <option value="会社員">会社員</option>
-                                        <option value="公務員">公務員</option>
-                                        <option value="自営業">自営業</option>
-                                        <option value="フリーランス">フリーランス</option>
-                                        <option value="経営者">経営者</option>
-                                        <option value="学生">学生</option>
-                                        <option value="その他">その他</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label className="block text-xs font-medium text-gray-700 mb-1">学歴</label>
-                                    <select
-                                        className="w-full border border-gray-200 rounded-full px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-tapple-pink focus:border-transparent transition-all appearance-none bg-white"
-                                        value={femaleFormData.education}
-                                        onChange={(e) => handleInputChange('education', e.target.value)}
-                                        disabled={!selectedTarget && !isNewMode}
-                                    >
-                                        <option value="">選択</option>
-                                        <option value="高校卒業">高校卒</option>
-                                        <option value="専門学校卒業">専門卒</option>
-                                        <option value="短大卒業">短大卒</option>
-                                        <option value="大学卒業">大学卒</option>
-                                        <option value="大学院修了">院卒</option>
-                                        <option value="その他">その他</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-medium text-gray-700 mb-1">休日</label>
-                                    <input
-                                        type="text"
-                                        className="w-full border border-gray-200 rounded-full px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-tapple-pink focus:border-transparent transition-all"
-                                        placeholder="土日祝"
-                                        value={femaleFormData.holiday}
-                                        onChange={(e) => handleInputChange('holiday', e.target.value)}
-                                        disabled={!selectedTarget && !isNewMode}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* 趣味・性格セクション */}
-                    <div className="bg-white rounded-xl p-4 shadow-sm mb-3 border border-gray-100">
-                        <h3 className="text-sm font-bold text-gray-800 mb-3 flex items-center">
-                            <span className="w-6 h-6 bg-tapple-pink-pale rounded-full flex items-center justify-center mr-2 text-xs">
-                                <span className="text-tapple-pink">3</span>
-                            </span>
-                            趣味・性格
-                        </h3>
-                        <div className="space-y-3">
-                            <div>
-                                <label className="block text-xs font-medium text-gray-700 mb-1">趣味・関心事</label>
-                                <textarea
-                                    rows={2}
-                                    className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-tapple-pink focus:border-transparent transition-all resize-none"
-                                    placeholder="カフェ巡り、読書、ヨガ"
-                                    value={femaleFormData.hobby}
-                                    onChange={(e) => handleInputChange('hobby', e.target.value)}
-                                    disabled={!selectedTarget && !isNewMode}
-                                ></textarea>
-                            </div>
-
-                            <div>
-                                <label className="block text-xs font-medium text-gray-700 mb-1">自己紹介</label>
-                                <textarea
-                                    rows={3}
-                                    className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-tapple-pink focus:border-transparent transition-all resize-none"
-                                    placeholder="こんにちは！よろしくお願いします。"
-                                    value={femaleFormData.selfIntroduction}
-                                    onChange={(e) => handleInputChange('selfIntroduction', e.target.value)}
-                                    disabled={!selectedTarget && !isNewMode}
-                                ></textarea>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* ライフスタイルセクション */}
-                    <div className="bg-white rounded-xl p-4 shadow-sm mb-3 border border-gray-100">
-                        <h3 className="text-sm font-bold text-gray-800 mb-3 flex items-center">
-                            <span className="w-6 h-6 bg-tapple-pink-pale rounded-full flex items-center justify-center mr-2 text-xs">
-                                <span className="text-tapple-pink">4</span>
-                            </span>
-                            ライフスタイル
-                        </h3>
-                        <div className="space-y-3">
-                            <div className="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label className="block text-xs font-medium text-gray-700 mb-1">結婚歴</label>
-                                    <select
-                                        className="w-full border border-gray-200 rounded-full px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-tapple-pink focus:border-transparent transition-all appearance-none bg-white"
-                                        value={femaleFormData.marriageHistory}
-                                        onChange={(e) => handleInputChange('marriageHistory', e.target.value)}
-                                        disabled={!selectedTarget && !isNewMode}
-                                    >
-                                        <option value="">選択</option>
-                                        <option value="未婚">未婚</option>
-                                        <option value="離婚">離婚</option>
-                                        <option value="死別">死別</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-medium text-gray-700 mb-1">子供</label>
-                                    <select
-                                        className="w-full border border-gray-200 rounded-full px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-tapple-pink focus:border-transparent transition-all appearance-none bg-white"
-                                        value={femaleFormData.hasChildren}
-                                        onChange={(e) => handleInputChange('hasChildren', e.target.value)}
-                                        disabled={!selectedTarget && !isNewMode}
-                                    >
-                                        <option value="">選択</option>
-                                        <option value="いない">いない</option>
-                                        <option value="いる（同居）">同居</option>
-                                        <option value="いる（別居）">別居</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label className="block text-xs font-medium text-gray-700 mb-1">煙草</label>
-                                    <select
-                                        className="w-full border border-gray-200 rounded-full px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-tapple-pink focus:border-transparent transition-all appearance-none bg-white"
-                                        value={femaleFormData.smoking}
-                                        onChange={(e) => handleInputChange('smoking', e.target.value)}
-                                        disabled={!selectedTarget && !isNewMode}
-                                    >
-                                        <option value="">選択</option>
-                                        <option value="吸わない">吸わない</option>
-                                        <option value="時々吸う">時々</option>
-                                        <option value="吸う">吸う</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-medium text-gray-700 mb-1">お酒</label>
-                                    <select
-                                        className="w-full border border-gray-200 rounded-full px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-tapple-pink focus:border-transparent transition-all appearance-none bg-white"
-                                        value={femaleFormData.drinking}
-                                        onChange={(e) => handleInputChange('drinking', e.target.value)}
-                                        disabled={!selectedTarget && !isNewMode}
-                                    >
-                                        <option value="">選択</option>
-                                        <option value="飲まない">飲まない</option>
-                                        <option value="時々飲む">時々</option>
-                                        <option value="よく飲む">よく飲む</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label className="block text-xs font-medium text-gray-700 mb-1">同居人</label>
-                                    <select
-                                        className="w-full border border-gray-200 rounded-full px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-tapple-pink focus:border-transparent transition-all appearance-none bg-white"
-                                        value={femaleFormData.livingWith}
-                                        onChange={(e) => handleInputChange('livingWith', e.target.value)}
-                                        disabled={!selectedTarget && !isNewMode}
-                                    >
-                                        <option value="">選択</option>
-                                        <option value="一人暮らし">一人</option>
-                                        <option value="家族と同居">家族</option>
-                                        <option value="友人・知人とシェア">シェア</option>
-                                        <option value="その他">その他</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-medium text-gray-700 mb-1">結婚願望</label>
-                                    <select
-                                        className="w-full border border-gray-200 rounded-full px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-tapple-pink focus:border-transparent transition-all appearance-none bg-white"
-                                        value={femaleFormData.marriageIntention}
-                                        onChange={(e) => handleInputChange('marriageIntention', e.target.value)}
-                                        disabled={!selectedTarget && !isNewMode}
-                                    >
-                                        <option value="">選択</option>
-                                        <option value="すぐにでもしたい">すぐに</option>
-                                        <option value="2-3年以内にしたい">2-3年内</option>
-                                        <option value="いい人がいればしたい">いい人がいれば</option>
-                                        <option value="今は考えていない">考えていない</option>
-                                    </select>
-                                </div>
-                            </div>
+                        {/* 趣味・性格セクション */}
+                        <div>
+                            <label className="block text-xs font-medium text-gray-700 mb-1">趣味・関心事</label>
+                            <textarea
+                                rows={2}
+                                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-tapple-pink focus:border-transparent transition-all resize-none"
+                                placeholder="カフェ巡り、読書、ヨガ"
+                                value={femaleFormData.hobby}
+                                onChange={(e) => handleInputChange('hobby', e.target.value)}
+                                disabled={!selectedTarget && !isNewMode}
+                            ></textarea>
                         </div>
                     </div>
 

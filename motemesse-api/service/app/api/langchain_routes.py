@@ -19,42 +19,16 @@ def format_user_profile(user) -> str:
     """ユーザープロフィール情報を整形"""
     return f"""- 名前: {user.name or "ユーザー"}
 - 年齢: {f"{user.age}歳" if user.age else "不明"}
-- 職業: {user.job or "不明"}
 - 趣味: {user.hobby or "不明"}
-- 居住地: {user.residence or "不明"}
-- 勤務地: {user.work_place or "不明"}
-- 血液型: {user.blood_type or "不明"}
-- 学歴: {user.education or "不明"}
-- 仕事の種類: {user.work_type or "不明"}
-- 休日: {user.holiday or "不明"}
-- 結婚歴: {user.marriage_history or "不明"}
-- 子供の有無: {user.has_children or "不明"}
-- 煙草: {user.smoking or "不明"}
-- お酒: {user.drinking or "不明"}
-- 一緒に住んでいる人: {user.living_with or "不明"}
-- 結婚に対する意思: {user.marriage_intention or "不明"}
-- 自己紹介: {getattr(user, 'self_introduction', None) or "情報なし"}"""
+"""
 
 
 def format_target_profile(target) -> str:
     """ターゲットプロフィール情報を整形"""
     return f"""- 名前: {target.name}
 - 年齢: {f"{target.age}歳" if target.age else "不明"}
-- 職業: {target.job or "不明"}
 - 趣味: {target.hobby or "不明"}
-- 居住地: {target.residence or "不明"}
-- 勤務地: {target.work_place or "不明"}
-- 血液型: {target.blood_type or "不明"}
-- 学歴: {target.education or "不明"}
-- 仕事の種類: {target.work_type or "不明"}
-- 休日: {target.holiday or "不明"}
-- 結婚歴: {target.marriage_history or "不明"}
-- 子供の有無: {target.has_children or "不明"}
-- 煙草: {target.smoking or "不明"}
-- お酒: {target.drinking or "不明"}
-- 一緒に住んでいる人: {target.living_with or "不明"}
-- 結婚に対する意思: {target.marriage_intention or "不明"}
-- 自己紹介: {getattr(target, 'self_introduction', None) or "情報なし"}"""
+"""
 
 
 def get_tone_text(tone_value) -> str:
