@@ -199,9 +199,9 @@ export default function FemaleSetting() {
                                     ? `${nameFromStore}さんのプロフィール`
                                     : selectedTarget
                                         ? `${selectedTarget.name}さんのプロフィール`
-                                        : '相手のプロフィール設定'}
+                                        : '女性のプロフィール設定'}
                             </h2>
-                            <p className="text-xs opacity-90">相手の情報を入力してください</p>
+                            <p className="text-xs opacity-90">女性の情報を入力してください</p>
                         </div>
                     </div>
                 </div>

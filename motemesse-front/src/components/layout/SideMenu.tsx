@@ -160,9 +160,9 @@ export default function SideMenu() {
         {/* メニュー項目 - スクロール可能エリア */}
         <div className="overflow-y-auto">
           <div className="p-4 space-y-2">
-            {/* 相手選択セクション */}
+            {/* 女性選択セクション */}
             <div className="p-4 bg-gray-50 rounded-2xl">
-              <label className="block text-sm font-medium text-gray-700 mb-3">相手を選択</label>
+              <label className="block text-sm font-medium text-gray-700 mb-3">女性を選択</label>
               <div className="space-y-3">
                 <div className="relative">
                   <select
@@ -170,7 +170,7 @@ export default function SideMenu() {
                     onChange={handleSelectChangeWithRecentTarget}
                     className="appearance-none w-full bg-white border border-gray-200 rounded-full pl-4 pr-10 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-tapple-pink focus:border-transparent"
                   >
-                    <option value="">相手を選択してください</option>
+                    <option value="">女性を選択してください</option>
                     {targets.map((target) => (
                       <option key={target.id} value={target.id.toString()}>
                         {target.name}
@@ -281,7 +281,7 @@ export default function SideMenu() {
                   </div>
                   <div className="text-left">
                     <span className="font-medium block">プロフィール設定</span>
-                    <span className="text-xs text-gray-500">相手の情報</span>
+                    <span className="text-xs text-gray-500">女性の情報</span>
                   </div>
                 </div>
                 <svg className="w-5 h-5 text-gray-400 group-hover:text-tapple-pink transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">

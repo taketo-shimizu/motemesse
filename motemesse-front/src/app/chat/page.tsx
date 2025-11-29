@@ -658,7 +658,7 @@ export default function Chat() {
               ref={textareaRef} 
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              placeholder={selectedTarget ? '相手からのメッセージ' : '相手を選択してください'}
+              placeholder={selectedTarget ? '女性からのメッセージ' : '女性を選択してください'}
               minRows={1}
               maxRows={5}
               disabled={isLoading || !selectedTarget}
