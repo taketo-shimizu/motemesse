@@ -291,6 +291,28 @@ export default function SideMenu() {
             </Link>
           </div>
         </div>
+
+        {/* フッター - 利用規約・プライバシーポリシー */}
+        <div className="border-t border-gray-200 p-4 bg-gray-50">
+          <div className="flex justify-center gap-4">
+            <Link
+              href="/terms"
+              target="_blank"
+              onClick={closeMenu}
+              className="py-2 text-xs text-gray-600 hover:text-tapple-pink transition-colors"
+            >
+              利用規約
+            </Link>
+            <Link
+              href="/privacy"
+              target="_blank"
+              onClick={closeMenu}
+              className="py-2 text-xs text-gray-600 hover:text-tapple-pink transition-colors"
+            >
+              プライバシーポリシー
+            </Link>
+          </div>
+        </div>
       </div>
     </>
   );

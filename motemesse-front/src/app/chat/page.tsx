@@ -590,23 +590,26 @@ export default function Chat() {
                       <div className="bg-tapple-pink text-white rounded-[20px] rounded-tr-[4px] p-3 shadow-sm">
                         <p className="text-xs leading-relaxed whitespace-pre-wrap">{conversation.maleReply}</p>
                       </div>
-                      <div className='flex gap-2'>
-                        <button
-                          onClick={() => handleCopyMessage(conversation.maleReply)}
-                          className="text-xs text-gray-400 hover:text-gray-600"
-                        >
-                          コピー
-                        </button>
-                        {index === conversations.length - 1 && (
+                      <button
+                        onClick={() => handleCopyMessage(conversation.maleReply)}
+                        className="text-xs text-gray-400 hover:text-gray-600"
+                      >
+                        コピー
+                      </button>
+                      {index === conversations.length - 1 && (
+                        <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                          <p className="text-xs text-gray-700 mb-2">
+                            返信が１週間くらい返ってこない場合は追撃メッセージを送ってみましょう。
+                          </p>
                           <button
                             onClick={handleGenerateFollowUpReply}
                             disabled={isGeneratingInitial}
-                            className="text-xs text-gray-400 hover:text-gray-600"
+                            className="w-full px-4 py-2 bg-tapple-pink text-white text-xs font-medium rounded-full hover:bg-tapple-pink-dark transition-colors disabled:opacity-50"
                           >
-                            追撃
+                            追撃メッセージを生成
                           </button>
-                        )}
-                      </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

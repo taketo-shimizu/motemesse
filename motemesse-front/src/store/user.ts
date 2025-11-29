@@ -1,3 +1,4 @@
+import { updateAgreements } from '@/actions/user';
 import { create } from 'zustand';
 
 interface User {
@@ -7,6 +8,8 @@ interface User {
   hobby?: string | null;
   tone: number;
   recentTargetId?: number | null;
+  termsAgreed: boolean;
+  privacyPolicyAgreed: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -15,6 +18,10 @@ interface UserState {
   user: User | null;
   isLoading: boolean;
   error: string | null;
+  showAgreementModal: boolean;
+  termsOpened: boolean;
+  privacyOpened: boolean;
+  isAgreeing: boolean;
   syncUser: () => Promise<void>;
   updateUser: (data: {
     name?: string;
@@ -23,13 +30,22 @@ interface UserState {
   }) => Promise<void>;
   updateTone: (tone: number) => Promise<void>;
   updateRecentTargetId: (targetId: number | null) => Promise<void>;
+  updateAgreements: () => Promise<void>;
   setUser: (user: User | null) => void;
+  setShowAgreementModal: (show: boolean) => void;
+  setTermsOpened: (opened: boolean) => void;
+  setPrivacyOpened: (opened: boolean) => void;
+  setIsAgreeing: (agreeing: boolean) => void;
 }
 
 export const useUserStore = create<UserState>((set) => ({
   user: null,
   isLoading: false,
   error: null,
+  showAgreementModal: false,
+  termsOpened: false,
+  privacyOpened: false,
+  isAgreeing: false,
 
   syncUser: async () => {
     set({ isLoading: true, error: null });
@@ -145,7 +161,38 @@ export const useUserStore = create<UserState>((set) => ({
     }
   },
 
+  updateAgreements: async () => {
+    const { user } = useUserStore.getState();
+    if (!user) return;
+
+    set({ isLoading: true, error: null });
+
+    try {
+      const updatedUser = await updateAgreements(user.id);
+      set({ user: updatedUser, isLoading: false });
+    } catch (error) {
+      set({ error: (error as Error).message, isLoading: false });
+      throw error;
+    }
+  },
+
   setUser: (user) => {
     set({ user });
+  },
+
+  setShowAgreementModal: (show) => {
+    set({ showAgreementModal: show });
+  },
+
+  setTermsOpened: (opened) => {
+    set({ termsOpened: opened });
+  },
+
+  setPrivacyOpened: (opened) => {
+    set({ privacyOpened: opened });
+  },
+
+  setIsAgreeing: (agreeing) => {
+    set({ isAgreeing: agreeing });
   },
 }));

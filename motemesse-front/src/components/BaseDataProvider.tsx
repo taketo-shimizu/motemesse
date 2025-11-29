@@ -28,10 +28,10 @@ export default function BaseDataProvider({ children }: { children: React.ReactNo
       ]);
       const currentUser = useUserStore.getState().user;
 
-      // プロフィールが未完成の場合はuser-settingページにリダイレクト
-      if (currentUser && (!currentUser.name || !currentUser.age)) {
-        // すでにuser-settingページにいる場合はリダイレクトしない
-        if (pathname !== '/user-setting') {
+      // プロフィールが未完成、または利用規約・プライバシーポリシー未承諾の場合はuser-settingページにリダイレクト
+      if (currentUser && (!currentUser.name || !currentUser.age || !currentUser.termsAgreed || !currentUser.privacyPolicyAgreed )) {
+        // すでにuser-settingページ、利用規約ページ、プライバシーポリシーページにいる場合はリダイレクトしない
+        if (pathname !== '/user-setting' && pathname !== '/terms' && pathname !== '/privacy') {
           router.push('/user-setting');
           return;
         }

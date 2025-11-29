@@ -31,6 +31,8 @@ model User {
   tone              Int            @default(0)
   recentTargetId    Int?           @map("recent_target_id")
   anonymousId       String?        @unique(map: "users_anonymousId_key") @map("anonymous_id")
+  termsAgreed       Boolean        @default(false) @map("terms_agreed")
+  privacyPolicyAgreed Boolean      @default(false) @map("privacy_policy_agreed")
   conversations     Conversation[]
   targets           Target[]
   recentTarget      Target?        @relation("UserRecentTarget", fields: [recentTargetId], references: [id])
