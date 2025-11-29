@@ -116,25 +116,14 @@ export default function Privacy() {
               </section>
 
               <section>
-                <h2 className="text-xl font-semibold text-gray-800 mb-3">第10条（運営者情報）</h2>
-                <p className="leading-relaxed">
-                  モテメッセ運営事務局<br/>
-                  代表： ＿＿＿＿＿＿＿＿＿＿<br/>
-                  住所： ＿＿＿＿＿＿＿＿＿＿<br/>
-                  連絡先： <a href="mailto:motemesse.contact@gmail.com" className="text-tapple-pink hover:underline">motemesse.contact@gmail.com</a><br/>
-                  <span className="text-sm">（※住所については、請求があり次第遅滞なく開示する旨の記載に代えることも可能です）</span>
-                </p>
-              </section>
-
-              <section>
-                <h2 className="text-xl font-semibold text-gray-800 mb-3">第11条（プライバシーポリシーの変更）</h2>
+                <h2 className="text-xl font-semibold text-gray-800 mb-3">第10条（プライバシーポリシーの変更）</h2>
                 <p className="leading-relaxed">
                   当サービスは、法令の改正、サービス内容の変更等に応じて、本ポリシーを変更することがあります。変更後のプライバシーポリシーは、本サービス上に掲載した時点で効力を生じるものとします。
                 </p>
               </section>
 
               <section>
-                <h2 className="text-xl font-semibold text-gray-800 mb-3">第12条（準拠法・管轄裁判所）</h2>
+                <h2 className="text-xl font-semibold text-gray-800 mb-3">第11条（準拠法・管轄裁判所）</h2>
                 <p className="leading-relaxed">
                   本ポリシーの解釈・適用については日本法が適用されます。本ポリシーに関連して生じた紛争については、東京地方裁判所を第一審の専属的合意管轄裁判所とします。
                 </p>
@@ -150,8 +139,8 @@ export default function Privacy() {
               </section>
             </div>
             <div className="text-sm text-gray-600 mt-6">
-              <p>制定日：2025年●月●日</p>
-              <p>最終更新日：2025年●月●日</p>
+              <p>制定日：2025年12月5日</p>
+              <p>最終更新日：2025年12月5日</p>
             </div>
 
           </div>

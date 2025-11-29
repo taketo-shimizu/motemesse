@@ -156,8 +156,8 @@ export default function Terms() {
             </div>
 
             <div className="text-sm text-gray-600 mt-6">
-              <p>制定日：2025年●月●日</p>
-              <p>施行日：2025年●月●日</p>
+              <p>制定日：2025年12月5日</p>
+              <p>施行日：2025年12月5日</p>
             </div>
           </div>
         </div>
