@@ -137,9 +137,6 @@ export default function SideMenu() {
         <div className="bg-gradient-to-r from-tapple-pink to-tapple-pink-light p-4 text-white">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-white/20 backdrop-blur rounded-full flex items-center justify-center">
-                <span className="font-bold text-lg">M</span>
-              </div>
               <h2 className="text-lg font-bold">メニュー</h2>
             </div>
             <button
