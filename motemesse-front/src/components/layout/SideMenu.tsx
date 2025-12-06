@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useSideMenuStore } from '@/store/sideMenu';
-import { FiX, FiLogOut, FiUser, FiPlus, FiTrash2 } from 'react-icons/fi';
+import { FiX, FiLogOut, FiUser, FiPlus, FiTrash2, FiBook } from 'react-icons/fi';
 import { MdChatBubbleOutline } from 'react-icons/md';
 import { useUserStore } from '@/store/user';
 import { useTargetsStore } from '@/store/targets';
@@ -157,6 +157,28 @@ export default function SideMenu() {
         {/* メニュー項目 - スクロール可能エリア */}
         <div className="overflow-y-auto">
           <div className="p-4 space-y-2">
+            {/* 使い方ガイド */}
+            <Link
+              href="/guide"
+              onClick={closeMenu}
+              className="block w-full bg-gradient-to-r from-tapple-pink to-tapple-pink-light hover:from-tapple-pink-dark hover:to-tapple-pink text-white p-4 rounded-2xl transition-all shadow-md hover:shadow-lg text-sm"
+            >
+              <div className="flex items-center justify-between group">
+                <div className="flex items-center">
+                  <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center mr-3">
+                    <FiBook className="w-5 h-5 text-white" />
+                  </div>
+                  <div className="text-left">
+                    <span className="font-medium block">使い方ガイド</span>
+                    <span className="text-xs text-white/80">初めての方はこちら</span>
+                  </div>
+                </div>
+                <svg className="w-5 h-5 text-white/80 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
+            </Link>
+
             {/* 女性選択セクション */}
             <div className="p-4 bg-gray-50 rounded-2xl">
               <label className="block text-sm font-medium text-gray-700 mb-3">女性を選択</label>

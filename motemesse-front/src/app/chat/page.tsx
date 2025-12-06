@@ -532,7 +532,7 @@ export default function Chat() {
 
   return (
     <DefaultLayout>
-      <div className="grid grid-rows-[auto_1fr_auto_auto] h-[calc(100dvh-60px)] bg-[#f5f5f5] text-sm">
+      <div className="grid grid-rows-[auto_1fr_auto] h-[calc(100dvh-60px)] bg-[#f5f5f5] text-sm">
         {(isLoading || isLoadingConversations || isGeneratingInitial || initialization || isUploadingScreenshot) && (
           <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
             <div className="animate-spin rounded-full h-10 w-10 border-4 border-gray-200 border-t-tapple-pink"></div>
@@ -597,18 +597,31 @@ export default function Chat() {
                         コピー
                       </button>
                       {index === conversations.length - 1 && (
-                        <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                          <p className="text-xs text-gray-700 mb-2">
-                            返信が１週間くらい返ってこない場合は追撃メッセージを送ってみましょう。
-                          </p>
-                          <button
-                            onClick={handleGenerateFollowUpReply}
-                            disabled={isGeneratingInitial}
-                            className="w-full px-4 py-2 bg-tapple-pink text-white text-xs font-medium rounded-full hover:bg-tapple-pink-dark transition-colors disabled:opacity-50"
-                          >
-                            追撃メッセージを生成
-                          </button>
-                        </div>
+                        <>
+                          <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                            <p className="text-xs text-gray-700 mb-2">
+                              返信が１週間くらい返ってこない場合は追撃メッセージを送ってみましょう。
+                            </p>
+                            <button
+                              onClick={handleGenerateFollowUpReply}
+                              disabled={isGeneratingInitial}
+                              className="w-full px-4 py-2 bg-tapple-pink text-white text-xs font-medium rounded-full hover:bg-tapple-pink-dark transition-colors disabled:opacity-50"
+                            >
+                              追撃メッセージを生成
+                            </button>
+                          </div>
+
+                          {/* 広告 */}
+                          <div className='mt-3 text-center'>
+                            <span className='inline-block px-2 py-1 bg-gray-400 text-white text-xs rounded'>広告</span>
+                          </div>
+                          <div className="mt-1 flex justify-center">
+                            <a href="https://px.a8.net/svt/ejp?a8mat=45IKKY+CM9RCI+5SFC+5YZ75" rel="nofollow">
+                              <img style={{ border: 0 }} width="300" height="250" alt="" src="https://www26.a8.net/svt/bgt?aid=251129266763&wid=001&eno=01&mid=s00000027012001003000&mc=1" />
+                            </a>
+                            <img style={{ border: 0 }} width="1" height="1" src="https://www17.a8.net/0.gif?a8mat=45IKKY+CM9RCI+5SFC+5YZ75" alt="" />
+                          </div>
+                        </>
                       )}
                     </div>
                   </div>
@@ -685,12 +698,16 @@ export default function Chat() {
         </div>
 
         {/* バナー広告エリア */}
-        <div className="bg-white border-t border-gray-200 flex justify-center items-center overflow-hidden">
-          {/* a8.netの広告コードをここに配置 */}
-          <div className="w-[350px] h-[80px] bg-gray-100 flex items-center justify-center text-gray-400 text-xs">
-            広告エリア (350×80)
+        {/*<div className="bg-white border-t border-gray-200 flex justify-center items-center overflow-hidden">
+          <div className="w-[350px] h-[80px] flex items-center justify-center">
+
+
+            <a href="https://px.a8.net/svt/ejp?a8mat=45IKKY+DTQEIA+4HMW+5ZMCH" rel="nofollow">
+              <img style={{ border: 0 }} width="234" height="60" alt="" src="https://www25.a8.net/svt/bgt?aid=251129266836&wid=001&eno=01&mid=s00000020948001006000&mc=1" />
+            </a>
+            <img  style={{ border: 0 }} width="1" height="1" src="https://www10.a8.net/0.gif?a8mat=45IKKY+DTQEIA+4HMW+5ZMCH" alt=""></img>
           </div>
-        </div>
+        </div>*/}
 
         {/* 返信候補オーバーレイ */}
         {showCandidates && replyCandidates.length > 0 && (
