@@ -25,11 +25,20 @@ export const metadata: Metadata = {
     siteName: "モテメッセ",
     type: "website",
     locale: "ja_JP",
+    images: [
+      {
+        url: "https://motemesse.vercel.app/logo.png",
+        width: 1536,
+        height: 1024,
+        alt: "モテメッセ - AIが恋愛メッセージを作成するアプリ",
+      }
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "モテメッセ - AIが恋愛メッセージを作成するアプリ",
     description: "AIがあなたの恋愛をサポート。最適なメッセージで成功率アップ！",
+    images: ["https://motemesse.vercel.app/logo.png"],
   },
   alternates: {
     canonical: "https://motemesse.vercel.app",
