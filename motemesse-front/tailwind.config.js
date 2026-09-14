@@ -20,7 +20,7 @@ const config = {
       },
       backgroundImage: {
         'pink-gradient': 'linear-gradient(135deg, #fce7f3 0%, #f8bbd9 100%)',
-        'gray-gradient': 'linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);',
+        'gray-gradient': 'linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%)',
       },
       animation: {
         shimmer: 'shimmer 2s linear infinite',
